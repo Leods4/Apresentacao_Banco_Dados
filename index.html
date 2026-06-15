@@ -4,60 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apresentação: Estudo de Caso NoSQL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 500: '#0ea5e9' }, // Equivalente a um tom de azul/cyan
+                        accent: { 400: '#22d3ee' }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        display: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #0f2027;
-            --secondary: #203a43;
-            --tertiary: #2c5364;
-            --accent: #00d2ff;
-            --text-main: #333333;
-            --text-light: #666666;
-            --glass-bg: rgba(255, 255, 255, 0.92);
-        }
-
         body {
-            margin: 0;
-            padding: 0;
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--tertiary));
-            color: var(--text-main);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            background: radial-gradient(circle at center, #1e293b, #0f172a);
         }
 
-        /* Efeito de partículas no fundo (Opcional, apenas CSS) */
-        .bg-pattern {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: 0;
+        /* Animação suave para a barra de progresso */
+        #progress-bar {
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .presentation-area {
-            position: relative;
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1;
-            perspective: 1000px;
-        }
-
+        /* Configuração base dos slides (Escondidos por padrão) */
         .slide {
             position: absolute;
             width: 85%;
             max-width: 1000px;
             height: 75vh;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-            padding: 50px 60px;
-            box-sizing: border-box;
             opacity: 0;
             visibility: hidden;
             transform: translateY(50px) scale(0.95);
@@ -65,324 +46,248 @@
             overflow-y: auto;
         }
 
+        /* Classe dinâmica controlada pelo JS */
         .slide.active {
             opacity: 1;
             visibility: visible;
             transform: translateY(0) scale(1);
         }
 
-        /* Estilização da barra de rolagem */
+        /* Estilização da barra de rolagem dos slides */
         .slide::-webkit-scrollbar {
             width: 8px;
         }
         .slide::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.05);
+            background: rgba(0,0,0,0.2);
             border-radius: 10px;
         }
         .slide::-webkit-scrollbar-thumb {
-            background: var(--tertiary);
+            background: #334155;
             border-radius: 10px;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            color: var(--secondary);
-            margin-top: 0;
-            margin-bottom: 30px;
-            position: relative;
-            padding-bottom: 15px;
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
-
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        li {
-            font-size: 1.15rem;
-            line-height: 1.7;
-            margin-bottom: 20px;
-            padding-left: 35px;
-            position: relative;
-            color: var(--text-light);
-        }
-
-        li strong {
-            color: var(--secondary);
-            font-weight: 600;
-        }
-
-        li::before {
-            content: '✦';
-            position: absolute;
-            left: 0;
-            top: 2px;
-            color: var(--accent);
-            font-size: 1.2rem;
-        }
-
-        /* Controles inferiores */
-        .bottom-bar {
-            height: 80px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 5%;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
-            z-index: 10;
-        }
-
-        .btn {
-            background: transparent;
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            color: white;
-            padding: 10px 30px;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        .btn:hover:not(:disabled) {
-            background: var(--accent);
-            border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        /* Barra de progresso */
-        .progress-wrapper {
-            flex-grow: 1;
-            margin: 0 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: white;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-        }
-
-        .progress-track {
-            width: 100%;
-            max-width: 400px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 3px;
-            margin-top: 8px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--accent);
-            width: 0%;
-            transition: width 0.4s ease;
-            box-shadow: 0 0 10px var(--accent);
         }
     </style>
 </head>
-<body>
+<body class="h-screen w-screen overflow-hidden text-slate-200 relative flex flex-col">
 
-    <div class="bg-pattern"></div>
-
-    <div class="presentation-area">
-        
-        <!-- Slide 1 -->
-        <div class="slide active" id="slide-1">
-            <h1>Estudo de Caso: Banco de Dados NoSQL</h1>
-            <ul>
-                <li><strong>Título da Apresentação:</strong> Estudo de Caso Real: Análise de Desempenho em Banco de Dados NoSQL Orientado a Documentos</li>
-                <li><strong>Artigo Base:</strong> Análise de Desempenho em Banco de Dados NoSQL Orientado a Documentos: Um Índice para Comparação de Modelos de Dados</li>
-                <li><strong>Publicação:</strong> Proceedings of the 38th Brazilian Symposium on Databases, 2023</li>
-                <li><strong>Autores:</strong> Harley Vera-Olivera, Edwin Alvarez-Mamani, Maristela Holanda</li>
-                <li><strong>Apresentado por:</strong> [Seu Nome / Equipe]</li>
-                <li><strong>Disciplina / Professor:</strong> [Nome da Disciplina] / [Nome do Professor]</li>
-            </ul>
-        </div>
-
-        <!-- Slide 2 -->
-        <div class="slide" id="slide-2">
-            <h1>Introdução ao Estudo de Caso</h1>
-            <ul>
-                <li><strong>Contexto:</strong> Bancos de dados orientados a documentos utilizam o "documento" como estrutura fundamental. Eles podem conter atributos simples ou complexos/aninhados (arrays ou subdocumentos).</li>
-                <li><strong>Tema Principal:</strong> O artigo busca estabelecer um Índice de Desempenho (InD) para comparar o acesso a dados estruturados como "documentos referenciados" versus "documentos aninhados".</li>
-                <li><strong>Domínio:</strong> Arquitetura de Software e Banco de Dados. Validação prática realizada com os microdados do ENEM 2021.</li>
-                <li><strong>Objetivo:</strong> Revelar com dados estatísticos como a escolha da modelagem (Referência vs. Aninhamento) impacta diretamente o tempo de resposta das consultas.</li>
-            </ul>
-        </div>
-
-        <!-- Slide 3 -->
-        <div class="slide" id="slide-3">
-            <h1>O Problema e Desafio Original</h1>
-            <ul>
-                <li><strong>O Cenário:</strong> Desenvolvedores constantemente precisam decidir se vão referenciar um documento (usando IDs, similar a chaves estrangeiras) ou aninhar as informações diretamente.</li>
-                <li><strong>A Dor (Limitação):</strong> Faltavam estudos empíricos que definissem um índice geral de comparação de desempenho. A performance é afetada por inúmeras variáveis complexas: infraestrutura de rede, hardware, memória cache e o volume de dados.</li>
-                <li><strong>A Busca:</strong> Criar uma métrica confiável que guie projetistas a escolherem a melhor abordagem de modelagem baseada em dados concretos, otimizando aplicações que exigem alta disponibilidade e velocidade.</li>
-            </ul>
-        </div>
-
-        <!-- Slide 4 -->
-        <div class="slide" id="slide-4">
-            <h1>Por que NoSQL? (A Justificativa)</h1>
-            <ul>
-                <li><strong>Quebra de Paradigmas:</strong> A escolha recai sobre o NoSQL devido à flexibilidade intrínseca do seu modelo. O NoSQL permite armazenar dados hierárquicos e complexos sem a rigidez dos esquemas tabulares relacionais.</li>
-                <li><strong>Armazenamento Estratégico:</strong> A capacidade de manter dados fortemente relacionados em um único documento físico (aninhamento) reduz ou elimina a necessidade de joins complexos em tempo de leitura.</li>
-                <li><strong>Foco do Comparativo:</strong> A inovação do estudo não é comparar SQL x NoSQL, mas sim resolver o dilema interno do mundo NoSQL: as estratégias de <i>Schema Design</i> (Referenciado vs. Aninhado).</li>
-            </ul>
-        </div>
-
-        <!-- Slide 5 -->
-        <div class="slide" id="slide-5">
-            <h1>A Ferramenta: MongoDB</h1>
-            <ul>
-                <li><strong>O SGBD Escolhido:</strong> MongoDB, versão 6.0.</li>
-                <li><strong>Categoria:</strong> Banco de Dados NoSQL Orientado a Documentos.</li>
-                <li><strong>Configurações Críticas:</strong> Foram mantidas as configurações padrão de mercado para refletir cenários reais de uso: <i>read concern</i> em "local" e <i>write concern</i> em "acknowledge".</li>
-                <li><strong>Volume de Teste:</strong> A pesquisa utilizou um banco de dados sintético robusto, povoado com exatos 10 milhões de documentos, com dezenas de atributos alfanuméricos randômicos para forçar o processamento.</li>
-            </ul>
-        </div>
-
-        <!-- Slide 6 -->
-        <div class="slide" id="slide-6">
-            <h1>Arquitetura da Solução</h1>
-            <ul>
-                <li><strong>Topologias Testadas:</strong> Os testes rodaram sob duas arquiteturas distintas: <i>Standalone</i> (centralizado em uma instância) e <i>Replica Set</i> (distribuído com um nó primário e dois secundários).</li>
-                <li><strong>Infraestrutura Mista:</strong> O experimento rodou tanto em hardwares físicos (servidores Intel Xeon/Core i7) quanto em instâncias de nuvem no Google Cloud Platform.</li>
-                <li><strong>Modelagem Empírica:</strong> Documento "A" e Documento "B". No primeiro cenário, "A" aponta para "B" usando um ID. No segundo, "B" vive integralmente dentro de "A".</li>
-            </ul>
-        </div>
-
-        <!-- Slide 7 -->
-        <div class="slide" id="slide-7">
-            <h1>Implementação e Execução</h1>
-            <ul>
-                <li><strong>As Consultas (Queries):</strong> Para ler dados referenciados, foi exigido o <i>pipeline</i> de agregação com a função <code>$lookup</code> (simulador de join). Para os aninhados, usou-se apenas <code>$project</code> simples.</li>
-                <li><strong>Estresse Operacional:</strong> Os pacotes de leitura variavam iterativamente, recuperando de 200 mil até 5 milhões de documentos por vez, com a memória cache do banco ativada e desativada alternadamente.</li>
-                <li><strong>Análise de Dados:</strong> O framework Python <i>Scikit-learn</i> foi utilizado para traçar modelos matemáticos de Regressão Múltipla baseados nos tempos de resposta.</li>
-            </ul>
-        </div>
-
-        <!-- Slide 8 -->
-        <div class="slide" id="slide-8">
-            <h1>Resultados Obtidos</h1>
-            <ul>
-                <li><strong>Ganhos em Replica Set (Distribuído):</strong> Documentos aninhados apresentaram leitura 2.20 vezes mais rápida com cache ativado, e 1.74 vezes mais rápida sem cache.</li>
-                <li><strong>Ganhos em Standalone (Local):</strong> Documentos aninhados foram 1.70 vezes mais rápidos (com cache) e 1.24 vezes mais rápidos (sem cache).</li>
-                <li><strong>A Prova Real:</strong> Aplicando a mesma matemática no dataset do ENEM 2021 (3.3 milhões de registros), a performance se comprovou na prática, atestando a precisão da modelagem estatística.</li>
-            </ul>
-        </div>
-
-        <!-- Slide 9 -->
-        <div class="slide" id="slide-9">
-            <h1>Desafios e Trade-offs</h1>
-            <ul>
-                <li><strong>O Preço da Separação:</strong> Separar documentos (referência) força o SGBD a cruzar dados em tempo de execução via <code>$lookup</code>, o que se provou computacionalmente caro e eleva consideravelmente a latência.</li>
-                <li><strong>Limitações do Estudo:</strong> Os índices gerados focam no cenário de leitura e em cardinalidades de 1:1. Diferentes chaves, relações N:N ou o impacto da gravação/atualização não estão cobertos neste escopo.</li>
-                <li><strong>Infraestrutura Importa:</strong> O desempenho variou sensivelmente entre instâncias cloud e hardware local (bare-metal), mostrando que a camada física afeta a otimização de consultas.</li>
-            </ul>
-        </div>
-
-        <!-- Slide 10 -->
-        <div class="slide" id="slide-10">
-            <h1>Lições Aprendidas</h1>
-            <ul>
-                <li><strong>Aninhamento é Velocidade:</strong> Em arquiteturas focadas em grande volume de leitura, consolidar dados no mesmo documento (aninhamento) é a melhor estratégia técnica.</li>
-                <li><strong>Decisão Arquitetural:</strong> Evite <i>Joins</i> no NoSQL sempre que possível. Projete o esquema em torno de como os dados serão consumidos pela aplicação.</li>
-                <li><strong>Próximos Passos (Futuro):</strong> Projetos futuros devem testar esses modelos sob cargas massivas de <i>escrita</i> (Write) e avaliar como o <i>Sharding</i> (particionamento horizontal) afeta essas métricas.</li>
-            </ul>
-        </div>
-
-        <!-- Slide 11 -->
-        <div class="slide" id="slide-11">
-            <h1>Conclusão e Referências</h1>
-            <ul>
-                <li><strong>Obrigado!</strong> Sessão aberta para dúvidas e discussões.</li>
-                <br>
-                <li><strong>Referência Bibliográfica Principal:</strong></li>
-                <li>VERA-OLIVERA, H.; ALVAREZ-MAMANI, E.; HOLANDA, M. <i>Análise de Desempenho em Banco de Dados NoSQL Orientado a Documentos: Um Índice para Comparação de Modelos de Dados.</i> In: PROCEEDINGS OF THE 38TH BRAZILIAN SYMPOSIUM ON DATABASES, 2023. p. 26-38.</li>
-            </ul>
-        </div>
-
+    <div class="fixed top-0 left-0 w-full h-1.5 z-50 bg-slate-900">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-brand-500 to-accent-400 w-0 shadow-[0_0_10px_rgba(34,211,238,0.5)]"></div>
     </div>
 
-    <!-- Interface de Controle -->
-    <div class="bottom-bar">
-        <button class="btn" id="prevBtn" onclick="changeSlide(-1)" disabled>❮ Anterior</button>
+    <div class="fixed bottom-6 left-8 z-50 text-slate-500 text-sm flex items-center gap-3">
+        Navegar: 
+        <span class="flex gap-1">
+            <kbd class="bg-slate-800 px-2 py-1 rounded text-slate-300 border border-slate-700 shadow-sm">→</kbd>
+            <kbd class="bg-slate-800 px-2 py-1 rounded text-slate-300 border border-slate-700 shadow-sm">Espaço</kbd>
+        </span>
+        ou Clique
+    </div>
+
+    <div class="fixed bottom-6 right-8 z-50 font-display font-bold text-slate-500 tracking-widest text-lg">
+        <span id="counter" class="text-slate-300"></span> / <span id="total-slides"></span>
+    </div>
+
+    <div class="flex-grow flex items-center justify-center relative z-10 perspective-[1000px]">
         
-        <div class="progress-wrapper">
-            <span id="counter">Slide 1 de 11</span>
-            <div class="progress-track">
-                <div class="progress-fill" id="progressBar"></div>
-            </div>
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Estudo de Caso: Banco de Dados NoSQL</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">Título da Apresentação:</strong> Estudo de Caso Real: Análise de Desempenho em Banco de Dados NoSQL Orientado a Documentos</li>
+                <li><strong class="text-white">Artigo Base:</strong> Análise de Desempenho em Banco de Dados NoSQL Orientado a Documentos: Um Índice para Comparação de Modelos de Dados</li>
+                <li><strong class="text-white">Publicação:</strong> Proceedings of the 38th Brazilian Symposium on Databases, 2023</li>
+                <li><strong class="text-white">Autores:</strong> Harley Vera-Olivera, Edwin Alvarez-Mamani, Maristela Holanda</li>
+                <li><strong class="text-white">Apresentado por:</strong> [Seu Nome / Equipe]</li>
+                <li><strong class="text-white">Disciplina / Professor:</strong> [Nome da Disciplina] / [Nome do Professor]</li>
+            </ul>
         </div>
 
-        <button class="btn" id="nextBtn" onclick="changeSlide(1)">Próximo ❯</button>
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Introdução ao Estudo de Caso</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">Contexto:</strong> Bancos de dados orientados a documentos utilizam o "documento" como estrutura fundamental. Eles podem conter atributos simples ou complexos/aninhados (arrays ou subdocumentos).</li>
+                <li><strong class="text-white">Tema Principal:</strong> O artigo busca estabelecer um Índice de Desempenho (InD) para comparar o acesso a dados estruturados como "documentos referenciados" versus "documentos aninhados".</li>
+                <li><strong class="text-white">Domínio:</strong> Arquitetura de Software e Banco de Dados. Validação prática realizada com os microdados do ENEM 2021.</li>
+                <li><strong class="text-white">Objetivo:</strong> Revelar com dados estatísticos como a escolha da modelagem (Referência vs. Aninhamento) impacta diretamente o tempo de resposta das consultas.</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">O Problema e Desafio Original</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">O Cenário:</strong> Desenvolvedores constantemente precisam decidir se vão referenciar um documento (usando IDs, similar a chaves estrangeiras) ou aninhar as informações diretamente.</li>
+                <li><strong class="text-white">A Dor (Limitação):</strong> Faltavam estudos empíricos que definissem um índice geral de comparação de desempenho. A performance é afetada por inúmeras variáveis complexas: infraestrutura de rede, hardware, memória cache e o volume de dados.</li>
+                <li><strong class="text-white">A Busca:</strong> Criar uma métrica confiável que guie projetistas a escolherem a melhor abordagem de modelagem baseada em dados concretos, otimizando aplicações que exigem alta disponibilidade e velocidade.</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Por que NoSQL? (A Justificativa)</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">Quebra de Paradigmas:</strong> A escolha recai sobre o NoSQL devido à flexibilidade intrínseca do seu modelo. O NoSQL permite armazenar dados hierárquicos e complexos sem a rigidez dos esquemas tabulares relacionais.</li>
+                <li><strong class="text-white">Armazenamento Estratégico:</strong> A capacidade de manter dados fortemente relacionados em um único documento físico (aninhamento) reduz ou elimina a necessidade de joins complexos em tempo de leitura.</li>
+                <li><strong class="text-white">Foco do Comparativo:</strong> A inovação do estudo não é comparar SQL x NoSQL, mas sim resolver o dilema interno do mundo NoSQL: as estratégias de <i class="text-accent-400">Schema Design</i> (Referenciado vs. Aninhado).</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">A Ferramenta: MongoDB</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">O SGBD Escolhido:</strong> MongoDB, versão 6.0.</li>
+                <li><strong class="text-white">Categoria:</strong> Banco de Dados NoSQL Orientado a Documentos.</li>
+                <li><strong class="text-white">Configurações Críticas:</strong> Foram mantidas as configurações padrão de mercado para refletir cenários reais de uso: <i class="text-accent-400">read concern</i> em "local" e <i class="text-accent-400">write concern</i> em "acknowledge".</li>
+                <li><strong class="text-white">Volume de Teste:</strong> A pesquisa utilizou um banco de dados sintético robusto, povoado com exatos 10 milhões de documentos, com dezenas de atributos alfanuméricos randômicos para forçar o processamento.</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Arquitetura da Solução</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">Topologias Testadas:</strong> Os testes rodaram sob duas arquiteturas distintas: <i class="text-accent-400">Standalone</i> (centralizado em uma instância) e <i class="text-accent-400">Replica Set</i> (distribuído com um nó primário e dois secundários).</li>
+                <li><strong class="text-white">Infraestrutura Mista:</strong> O experimento rodou tanto em hardwares físicos (servidores Intel Xeon/Core i7) quanto em instâncias de nuvem no Google Cloud Platform.</li>
+                <li><strong class="text-white">Modelagem Empírica:</strong> Documento "A" e Documento "B". No primeiro cenário, "A" aponta para "B" usando um ID. No segundo, "B" vive integralmente dentro de "A".</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Implementação e Execução</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">As Consultas (Queries):</strong> Para ler dados referenciados, foi exigido o <i class="text-accent-400">pipeline</i> de agregação com a função <code class="bg-slate-900 px-2 py-1 rounded text-accent-400 font-mono text-sm">$lookup</code> (simulador de join). Para os aninhados, usou-se apenas <code class="bg-slate-900 px-2 py-1 rounded text-accent-400 font-mono text-sm">$project</code> simples.</li>
+                <li><strong class="text-white">Estresse Operacional:</strong> Os pacotes de leitura variavam iterativamente, recuperando de 200 mil até 5 milhões de documentos por vez, com a memória cache do banco ativada e desativada alternadamente.</li>
+                <li><strong class="text-white">Análise de Dados:</strong> O framework Python <i class="text-accent-400">Scikit-learn</i> foi utilizado para traçar modelos matemáticos de Regressão Múltipla baseados nos tempos de resposta.</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Resultados Obtidos</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">Ganhos em Replica Set (Distribuído):</strong> Documentos aninhados apresentaram leitura 2.20 vezes mais rápida com cache ativado, e 1.74 vezes mais rápida sem cache.</li>
+                <li><strong class="text-white">Ganhos em Standalone (Local):</strong> Documentos aninhados foram 1.70 vezes mais rápidos (com cache) e 1.24 vezes mais rápidos (sem cache).</li>
+                <li><strong class="text-white">A Prova Real:</strong> Aplicando a mesma matemática no dataset do ENEM 2021 (3.3 milhões de registros), a performance se comprovou na prática, atestando a precisão da modelagem estatística.</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Desafios e Trade-offs</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">O Preço da Separação:</strong> Separar documentos (referência) força o SGBD a cruzar dados em tempo de execução via <code class="bg-slate-900 px-2 py-1 rounded text-accent-400 font-mono text-sm">$lookup</code>, o que se provou computacionalmente caro e eleva consideravelmente a latência.</li>
+                <li><strong class="text-white">Limitações do Estudo:</strong> Os índices gerados focam no cenário de leitura e em cardinalidades de 1:1. Diferentes chaves, relações N:N ou o impacto da gravação/atualização não estão cobertos neste escopo.</li>
+                <li><strong class="text-white">Infraestrutura Importa:</strong> O desempenho variou sensivelmente entre instâncias cloud e hardware local (bare-metal), mostrando que a camada física afeta a otimização de consultas.</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Lições Aprendidas</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white">Aninhamento é Velocidade:</strong> Em arquiteturas focadas em grande volume de leitura, consolidar dados no mesmo documento (aninhamento) é a melhor estratégia técnica.</li>
+                <li><strong class="text-white">Decisão Arquitetural:</strong> Evite <i class="text-accent-400">Joins</i> no NoSQL sempre que possível. Projete o esquema em torno de como os dados serão consumidos pela aplicação.</li>
+                <li><strong class="text-white">Próximos Passos (Futuro):</strong> Projetos futuros devem testar esses modelos sob cargas massivas de <i class="text-accent-400">escrita</i> (Write) e avaliar como o <i class="text-accent-400">Sharding</i> (particionamento horizontal) afeta essas métricas.</li>
+            </ul>
+        </div>
+
+        <div class="slide bg-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl p-12 md:p-16">
+            <h1 class="text-3xl md:text-4xl text-brand-500 font-semibold mb-8 border-b-2 border-accent-400 inline-block pb-2">Conclusão e Referências</h1>
+            <ul class="space-y-5 text-lg text-slate-300 [&>li]:relative [&>li]:pl-8 [&>li::before]:content-['✦'] [&>li::before]:absolute [&>li::before]:left-0 [&>li::before]:text-accent-400">
+                <li><strong class="text-white text-xl">Obrigado!</strong> Sessão aberta para dúvidas e discussões.</li>
+                <li class="pt-6 border-t border-slate-700/50 mt-6"><strong class="text-white">Referência Bibliográfica Principal:</strong></li>
+                <li class="text-base text-slate-400 leading-relaxed">VERA-OLIVERA, H.; ALVAREZ-MAMANI, E.; HOLANDA, M. <i class="text-slate-300">Análise de Desempenho em Banco de Dados NoSQL Orientado a Documentos: Um Índice para Comparação de Modelos de Dados.</i> In: PROCEEDINGS OF THE 38TH BRAZILIAN SYMPOSIUM ON DATABASES, 2023. p. 26-38.</li>
+            </ul>
+        </div>
+
     </div>
 
     <script>
-        let currentSlide = 1;
-        const totalSlides = 11;
+        document.addEventListener('DOMContentLoaded', () => {
+            // Variáveis de Estado
+            const slides = document.querySelectorAll('.slide');
+            const progressBar = document.getElementById('progress-bar');
+            const counter = document.getElementById('counter');
+            const totalSlidesEl = document.getElementById('total-slides');
 
-        function updateUI() {
-            // Atualiza os slides
-            document.querySelectorAll('.slide').forEach((slide, index) => {
-                if(index + 1 === currentSlide) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
+            let currentSlideIndex = 0;
+            const totalSlides = slides.length;
+
+            // Injeta o total de slides na interface
+            totalSlidesEl.textContent = totalSlides;
+
+            // A Função Central
+            function updatePresentation() {
+                // 1. Remove classe ativa de todos
+                slides.forEach(slide => slide.classList.remove('active'));
+                
+                // 2. Adiciona ao slide atual
+                slides[currentSlideIndex].classList.add('active');
+                
+                // 3. Atualiza texto do contador
+                counter.textContent = currentSlideIndex + 1;
+                
+                // 4. Calcula e injeta percentagem na barra de progresso
+                const percentage = ((currentSlideIndex + 1) / totalSlides) * 100;
+                progressBar.style.width = percentage + '%';
+            }
+
+            // Funções de Navegação
+            function nextSlide() {
+                if (currentSlideIndex < totalSlides - 1) {
+                    currentSlideIndex++;
+                    updatePresentation();
+                }
+            }
+
+            function prevSlide() {
+                if (currentSlideIndex > 0) {
+                    currentSlideIndex--;
+                    updatePresentation();
+                }
+            }
+
+            // --- Interações e Eventos ---
+
+            // 1. Teclado
+            document.addEventListener('keydown', (e) => {
+                if (['ArrowRight', ' ', 'Enter'].includes(e.key)) {
+                    e.preventDefault(); // Previne scroll
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault(); // Previne scroll
+                    prevSlide();
                 }
             });
 
-            // Atualiza botões
-            document.getElementById('prevBtn').disabled = currentSlide === 1;
-            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+            // 2. Clique do Rato
+            document.addEventListener('click', (e) => {
+                // Salvaguarda 1: Não avança se estiver selecionando texto
+                if (window.getSelection().toString().length > 0) return;
+                
+                // Salvaguarda 2: Não avança se clicar em links ou botões
+                const targetTag = e.target.tagName.toLowerCase();
+                if (targetTag === 'a' || targetTag === 'button') return;
+                
+                nextSlide();
+            });
 
-            // Atualiza texto e barra de progresso
-            document.getElementById('counter').innerText = `Slide ${currentSlide} de ${totalSlides}`;
-            const percentage = ((currentSlide - 1) / (totalSlides - 1)) * 100;
-            document.getElementById('progressBar').style.width = `${percentage}%`;
-        }
+            // 3. Dispositivos Móveis / Swipe
+            let touchStartX = 0;
+            let touchEndX = 0;
 
-        function changeSlide(direction) {
-            currentSlide += direction;
-            if (currentSlide < 1) currentSlide = 1;
-            if (currentSlide > totalSlides) currentSlide = totalSlides;
-            updateUI();
-        }
+            document.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            });
 
-        // Suporte para navegação pelo teclado
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === 'Space') {
-                if (currentSlide < totalSlides) changeSlide(1);
-            } else if (e.key === 'ArrowLeft') {
-                if (currentSlide > 1) changeSlide(-1);
-            }
+            document.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                
+                const threshold = 50; // Margem de segurança
+                if (touchStartX - touchEndX > threshold) {
+                    // Arrastar para a esquerda (Avançar)
+                    nextSlide();
+                } else if (touchEndX - touchStartX > threshold) {
+                    // Arrastar para a direita (Recuar)
+                    prevSlide();
+                }
+            });
+
+            // Inicialização da primeira tela
+            updatePresentation();
         });
-
-        // Inicialização
-        updateUI();
     </script>
 </body>
 </html>
